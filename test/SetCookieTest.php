@@ -134,4 +134,34 @@ class SetCookieTest extends \PHPUnit_Framework_TestCase
 
         return $cases;
     }
+
+    /**
+     * @test
+     */
+    public function should_be_able_to_render_into_response_header()
+    {
+        $cookie = SetCookie::create('foo', 'bar');
+        $responseSpy = $this->prophesize('Psr\Http\Message\ResponseInterface');
+
+        $cookie->apply($responseSpy->reveal());
+
+        $responseSpy->withAddedHeader(SetCookie::HEADER_NAME, 'foo=bar')
+            ->shouldHaveBeenCalled();
+    }
+
+    /**
+     * @test
+     */
+    public function apply_into_response_header_should_return_response_object()
+    {
+        $cookie = SetCookie::create('foo', 'bar');
+        $responseSpy = $this->prophesize('Psr\Http\Message\ResponseInterface');
+
+        $responseSpy->withAddedHeader(SetCookie::HEADER_NAME, 'foo=bar')
+            ->willReturn($responseSpy->reveal());
+
+        $result = $cookie->apply($responseSpy->reveal());
+
+        $this->assertInstanceOf('Psr\Http\Message\ResponseInterface', $result);
+    }
 }

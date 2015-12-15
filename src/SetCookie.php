@@ -1,8 +1,12 @@
 <?php
 namespace Zuhdil\SetCookie;
 
+use Psr\Http\Message\ResponseInterface;
+
 class SetCookie
 {
+    const HEADER_NAME = 'Set-Cookie';
+
     private $name;
     private $value;
     private $expires;
@@ -107,6 +111,11 @@ class SetCookie
         $clone->httpOnly = (bool) $httpOnly;
 
         return $clone;
+    }
+
+    public function apply(ResponseInterface $respose)
+    {
+        return $respose->withAddedHeader(self::HEADER_NAME, (string) $this);
     }
 
     private function resolveExpires($time)
