@@ -25,8 +25,13 @@ class SetCookie
         $this->expires = $expires;
         $this->path = $path;
         $this->domain = $domain;
-        $this->secure = $secure;
-        $this->httpOnly = $httpOnly;
+        $this->secure = (bool) $secure;
+        $this->httpOnly = (bool) $httpOnly;
+    }
+
+    public static function create($name, $value = null, $expires = null, $path = null, $domain = null, $secure = false, $httpOnly = false)
+    {
+        return new self($name, $value, $expires, $path, $domain, $secure, $httpOnly);
     }
 
     public function __toString()
@@ -54,5 +59,53 @@ class SetCookie
         }
 
         return implode('; ', $parts);
+    }
+
+    public function withValue($value)
+    {
+        $clone = clone($this);
+        $clone->value = $value;
+
+        return $clone;
+    }
+
+    public function withExpires($expires)
+    {
+        $clone = clone($this);
+        $clone->expires = $expires;
+
+        return $clone;
+    }
+
+    public function withPath($path)
+    {
+        $clone = clone($this);
+        $clone->path = $path;
+
+        return $clone;
+    }
+
+    public function withDomain($domain)
+    {
+        $clone = clone($this);
+        $clone->domain = $domain;
+
+        return $clone;
+    }
+
+    public function withSecure($secure)
+    {
+        $clone = clone($this);
+        $clone->secure = (bool) $secure;
+
+        return $clone;
+    }
+
+    public function withHttpOnly($httpOnly)
+    {
+        $clone = clone($this);
+        $clone->httpOnly = (bool) $httpOnly;
+
+        return $clone;
     }
 }

@@ -31,6 +31,16 @@ class SetCookieTest extends \PHPUnit_Framework_TestCase
                 'Foo=Bar%2FBaz; Domain=.foo.com; Path=/quux; Expires=Wed, 13 Jan 2021 22:23:01 GMT; Secure; HttpOnly',
                 new SetCookie('Foo', 'Bar/Baz', 'Wed, 13 Jan 2021 22:23:01 GMT', '/quux', '.foo.com', true, true),
             ),
+            array(
+                'Foo=Bar%2FBaz; Domain=.foo.com; Path=/; Expires=Wed, 13 Jan 2021 22:23:01 GMT; Secure; HttpOnly',
+                SetCookie::create('Foo')
+                    ->withHttpOnly(true)
+                    ->withValue('Bar/Baz')
+                    ->withPath('/')
+                    ->withSecure(true)
+                    ->withExpires('Wed, 13 Jan 2021 22:23:01 GMT')
+                    ->withDomain('.foo.com')
+            ),
         );
     }
 
@@ -59,6 +69,42 @@ class SetCookieTest extends \PHPUnit_Framework_TestCase
             array("\nfoo"),
             array("\013foo"),
             array("\014foo"),
+        );
+    }
+
+    /**
+     * @dataProvider providePropertyValueCases
+     * @test
+     */
+    public function modifying_property_should_return_SetCookie_object($property, $value)
+    {
+        $original = new SetCookie('foo');
+        $method = 'with' . ucfirst($property);
+
+        $this->assertInstanceOf('Zuhdil\SetCookie\SetCookie', $original->$method($value));
+    }
+
+    /**
+     * @dataProvider providePropertyValueCases
+     * @test
+     */
+    public function should_be_immutable($property, $value)
+    {
+        $original = new SetCookie('foo');
+        $method = 'with' . ucfirst($property);
+
+        $this->assertNotSame($original, $original->$method($value));
+    }
+
+    public function providePropertyValueCases()
+    {
+        return array(
+            array('value', 'bar'),
+            array('expires', 'Wed, 13 Jan 2021 22:23:01 GMT'),
+            array('path', '/foo'),
+            array('domain', '.foo.com'),
+            array('secure', true),
+            array('httpOnly', true),
         );
     }
 }
