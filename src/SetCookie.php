@@ -13,6 +13,13 @@ class SetCookie
 
     public function __construct($name, $value = null, $expires = null, $path = null, $domain = null, $secure = false, $httpOnly = false)
     {
+        if (empty($name)) {
+            throw new \InvalidArgumentException('The cookie name cannot be empty.');
+        }
+        if (preg_match("/[=,; \t\r\n\013\014]/", $name)) {
+            throw new \InvalidArgumentException(sprintf('The cookie name "%s" contains invalid characters.', $name));
+        }
+
         $this->name = $name;
         $this->value = $value;
         $this->expires = $expires;

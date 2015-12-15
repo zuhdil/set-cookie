@@ -33,4 +33,32 @@ class SetCookieTest extends \PHPUnit_Framework_TestCase
             ),
         );
     }
+
+    /**
+     * @dataProvider provideInvalidNameCases
+     * @test
+     */
+    public function invalid_name_should_throws_InvalidArgumentException($name)
+    {
+        $this->setExpectedException('InvalidArgumentException');
+
+        new SetCookie($name);
+    }
+
+    public function provideInvalidNameCases()
+    {
+        return array(
+            array(''),
+            array('=foo'),
+            array(' foo'),
+            array(',foo'),
+            array(';foo'),
+            array(' foo'),
+            array("\tfoo"),
+            array("\rfoo"),
+            array("\nfoo"),
+            array("\013foo"),
+            array("\014foo"),
+        );
+    }
 }
