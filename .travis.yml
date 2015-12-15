@@ -14,7 +14,3 @@ before_script:
 
 script:
   - ./vendor/bin/phpunit --coverage-text
-
-notifications:
-  email:
-    - zuhdil@gmail.com
