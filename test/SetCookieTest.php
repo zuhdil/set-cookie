@@ -107,4 +107,31 @@ class SetCookieTest extends \PHPUnit_Framework_TestCase
             array('httpOnly', true),
         );
     }
+
+    /**
+     * @dataProvider provideMultipleExpiresTimeTypeCases
+     * @test
+     */
+    public function expires_should_accept_multipe_time_type($expected, $name, $expires)
+    {
+        $this->assertEquals($expected, (string) SetCookie::create($name)->withExpires($expires));
+    }
+
+    public function provideMultipleExpiresTimeTypeCases()
+    {
+        $cases = array(
+            array('foo=', 'foo', null, 'should ignore null'),
+            array('foo=; Expires=Wed, 13 Jan 2021 22:23:01 GMT', 'foo', strtotime('Wed, 13 Jan 2021 22:23:01 GMT'), 'should accept int timestamp'),
+            array('foo=', 'foo', 0, 'should ignore zero'),
+            array('foo=; Expires=Wed, 13 Jan 2021 22:23:01 GMT', 'foo', 'Wed, 13 Jan 2021 22:23:01 GMT', 'should accept time string'),
+            array('foo=', 'foo', '', 'should ignore string'),
+            array('foo=; Expires=Wed, 13 Jan 2021 22:23:01 GMT', 'foo', new \DateTime('Wed, 13 Jan 2021 22:23:01 GMT'), 'should accept DateTime object'),
+        );
+
+        if (version_compare(PHP_VERSION, '5.5.0', '>=')) {
+            $cases[] = array('foo=; Expires=Wed, 13 Jan 2021 22:23:01 GMT', 'foo', new \DateTimeImmutable('Wed, 13 Jan 2021 22:23:01 GMT'), 'should accept DateTimeImmutable object');
+        }
+
+        return $cases;
+    }
 }

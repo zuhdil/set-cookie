@@ -22,7 +22,7 @@ class SetCookie
 
         $this->name = $name;
         $this->value = $value;
-        $this->expires = $expires;
+        $this->expires = $this->resolveExpires($expires);
         $this->path = $path;
         $this->domain = $domain;
         $this->secure = (bool) $secure;
@@ -47,7 +47,7 @@ class SetCookie
         }
 
         if ($this->expires) {
-            $parts[] = 'Expires='.$this->expires;
+            $parts[] = 'Expires='.gmdate('D, d M Y H:i:s T', $this->expires);
         }
 
         if ($this->secure) {
@@ -72,7 +72,7 @@ class SetCookie
     public function withExpires($expires)
     {
         $clone = clone($this);
-        $clone->expires = $expires;
+        $clone->expires = $this->resolveExpires($expires);
 
         return $clone;
     }
@@ -107,5 +107,18 @@ class SetCookie
         $clone->httpOnly = (bool) $httpOnly;
 
         return $clone;
+    }
+
+    private function resolveExpires($time)
+    {
+        if (is_null($time) || is_numeric($time)) {
+            return $time;
+        }
+
+        if (is_object($time) && method_exists($time, 'getTimestamp')) {
+            return $time->getTimestamp();
+        }
+
+        return strtotime($time);
     }
 }
